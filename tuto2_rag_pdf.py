@@ -7,6 +7,9 @@ from langchain_openai import OpenAIEmbeddings
 import faiss
 from langchain_community.docstore.in_memory import InMemoryDocstore
 from langchain_community.vectorstores import FAISS
+from typing import List
+from langchain_core.documents import Document
+from langchain_core.runnables import chain
 
 # 添加分隔函数
 def print_section(section_name):
@@ -76,4 +79,50 @@ vector_store = FAISS(
     index_to_docstore_id={},
 )
 
+ids = vector_store.add_documents(documents=all_splits)
+
 print(f"Number of vectors in the vector store: {vector_store.index.ntotal}")
+
+# 4. Query the vector store
+
+# 4.1 相似度搜索
+results = vector_store.similarity_search("How many distribution centers does Nike have in the US?")
+print(results[0])
+
+# 4.2 相似度搜索并返回分数
+results = vector_store.similarity_search_with_score("What was Nike's revenue in 2023?")
+doc, score = results[0]
+print(f"Score: {score}\n")
+print(doc)
+
+# 4.3 向量搜索
+embedding = embeddings.embed_query("How were Nike's margins impacted in 2023?")
+results1 = vector_store.similarity_search_by_vector(embedding)
+print(results1[0])
+
+@chain
+def retriever(query: str) -> List[Document]:
+    return vector_store.similarity_search(query, k=1)
+
+results2 = retriever.batch(
+    [
+        "How many distribution centers does Nike have in the US?",
+        "When was Nike incorporated?",
+    ],
+)
+print('-'*50)
+print(results2)
+
+retriever = vector_store.as_retriever(
+    search_type="similarity",
+    search_kwargs={"k": 1},
+)
+
+results3 = retriever.batch(
+    [
+        "How many distribution centers does Nike have in the US?",
+        "When was Nike incorporated?",
+    ],
+)
+print('-'*50)
+print(results3)
