@@ -3,17 +3,18 @@ import os
 from typing import Sequence
 from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_openai import ChatOpenAI
-from pydantic import BaseModel, Field
-from langchain_core.messages import AIMessage, HumanMessage
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.messages import (
+    AIMessage, 
+    HumanMessage, 
+    BaseMessage,
+    SystemMessage
+)
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import START, MessagesState, StateGraph
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_core.messages import BaseMessage
 from langgraph.graph.message import add_messages
 from typing_extensions import Annotated, TypedDict
-from langchain_core.messages import SystemMessage, trim_messages
+from langchain_core.messages import trim_messages
 
 
 # 添加分隔函数
