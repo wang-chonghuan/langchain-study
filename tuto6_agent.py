@@ -30,7 +30,7 @@ tools = [search]
 # 2. 测试工具调用
 print_section("测试工具调用")
 
-model = ChatOpenAI(model="gpt-4")
+model = ChatOpenAI(model="gpt-4o-mini")
 model_with_tools = model.bind_tools(tools)
 
 response = model_with_tools.invoke([HumanMessage(content="Hi!")])
