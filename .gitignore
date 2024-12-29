@@ -1,5 +1,6 @@
 # 环境变量文件
 .env
+*.sqlite
 
 # Python 虚拟环境
 venv/
