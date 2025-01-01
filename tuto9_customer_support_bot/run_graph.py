@@ -3,7 +3,7 @@ import uuid
 
 from db_init import update_dates, db
 from utils import _print_event
-from graph import part_2_graph
+from graph import part_3_graph
 from langchain_core.messages import ToolMessage
 
 # Let's create an example conversation a user might have with the assistant
@@ -38,16 +38,33 @@ config = {
     }
 }
 
+tutorial_questions = [
+    "Hi there, what time is my flight?",
+    "Am i allowed to update my flight to something sooner? I want to leave later today.",
+    "Update my flight to sometime next week then",
+    "The next available option is great",
+    "what about lodging and transportation?",
+    "Yeah i think i'd like an affordable hotel for my week-long stay (7 days). And I'll want to rent a car.",
+    "OK could you place a reservation for your recommended hotel? It sounds nice.",
+    "yes go ahead and book anything that's moderate expense and has availability.",
+    "Now for a car, what are my options?",
+    "Awesome let's just get the cheapest option. Go ahead and book for 7 days",
+    "Cool so now what recommendations do you have on excursions?",
+    "Are they available while I'm there?",
+    "interesting - i like the museums, what options are there? ",
+    "OK great pick one and book it for my second day there.",
+]
+
 
 _printed = set()
 # We can reuse the tutorial questions from part 1 to see how it does.
 for question in tutorial_questions:
-    events = part_2_graph.stream(
+    events = part_3_graph.stream(
         {"messages": ("user", question)}, config, stream_mode="values"
     )
     for event in events:
         _print_event(event, _printed)
-    snapshot = part_2_graph.get_state(config)
+    snapshot = part_3_graph.get_state(config)
     while snapshot.next:
         # We have an interrupt! The agent is trying to use a tool, and the user can approve or deny it
         # Note: This code is all outside of your graph. Typically, you would stream the output to a UI.
@@ -61,14 +78,14 @@ for question in tutorial_questions:
             user_input = "y"
         if user_input.strip() == "y":
             # Just continue
-            result = part_2_graph.invoke(
+            result = part_3_graph.invoke(
                 None,
                 config,
             )
         else:
             # Satisfy the tool invocation by
             # providing instructions on the requested changes / change of mind
-            result = part_2_graph.invoke(
+            result = part_3_graph.invoke(
                 {
                     "messages": [
                         ToolMessage(
@@ -79,4 +96,4 @@ for question in tutorial_questions:
                 },
                 config,
             )
-        snapshot = part_2_graph.get_state(config)
+        snapshot = part_3_graph.get_state(config)
