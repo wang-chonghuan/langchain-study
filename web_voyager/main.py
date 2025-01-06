@@ -75,14 +75,18 @@ async def main():
     if not os.getenv("OPENAI_API_KEY"):
         raise ValueError("OPENAI_API_KEY 环境变量未设置")
     
-    # 启动浏览器
+    # 启动浏览器，设置英文语言
     browser = await async_playwright().start()
     browser = await browser.chromium.launch(headless=False, args=None)
-    page = await browser.new_page()
+    context = await browser.new_context(
+        locale='en-US'
+    )
+    page = await context.new_page()
     _ = await page.goto("https://www.google.com")
     
     # 调用 agent
-    res = await call_agent("Could you explain the WebVoyager paper (on arxiv)?", page)
+    #res = await call_agent("Could you explain the WebVoyager paper (on arxiv)?", page)
+    res = await call_agent("Could you check google maps to see when i should leave to get to San Francisco International Airport? starting from San Francisco downtown by 7 o'clock.", page)
     print(f"Final response: {res}")
     
     # 关闭浏览器
